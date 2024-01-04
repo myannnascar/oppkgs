@@ -1,29 +1,24 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021-2023 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gowebdav
-PKG_VERSION:=4.2.0
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_VERSION:=0.0.5
+PKG_RELEASE:=35
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/hacdias/webdav/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=bc8e11cf765e5506677968ccdf815e0648d93606dc3c5e8f5f2f76fe0407ee2c
+PKG_SOURCE_URL:=https://codeload.github.com/1715173329/gowebdav/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=skip
 
-PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=ElonH <elonhhuang@gmail.com>
+PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/webdav-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
+PKG_BUILD_FLAGS:=no-mips16
 
-GO_PKG:=github.com/hacdias/webdav
-GO_PKG_LDFLAGS:=-s -w
+GO_PKG:=github.com/1715173329/gowebdav
 
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
@@ -32,24 +27,24 @@ define Package/gowebdav
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=File Transfer
-  TITLE:=Simple Go WebDAV server
-  URL:=https://github.com/hacdias/webdav
+  TITLE:=A simple WebDav server written in Go
+  URL:=https://github.com/1715173329/gowebdav
   DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
-define Package/gowebdav/description
-Webdav command line interface is really easy to use so you can easily create
-a WebDAV server for your own user. By default, it runs on a random free port
-and supports JSON, YAML and TOML configuration.
+define Package/gowebdav/conffiles
+/etc/config/gowebdav
 endef
 
 define Package/gowebdav/install
 	$(call GoPackage/Package/Install/Bin,$(1))
 
-	$(INSTALL_DIR) $(1)/etc/config/ $(1)/etc/init.d/ $(1)/etc/webdav/
-	$(INSTALL_BIN) $(CURDIR)/files/webdav.init $(1)/etc/init.d/webdav
-	$(INSTALL_CONF) $(CURDIR)/files/webdav.config $(1)/etc/config/webdav
-	$(INSTALL_CONF) $(CURDIR)/files/webdav.yaml $(1)/etc/webdav/webdav.yaml
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) $(CURDIR)/files/gowebdav.config $(1)/etc/config/gowebdav
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) $(CURDIR)/files/gowebdav.init $(1)/etc/init.d/gowebdav
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) $(CURDIR)/files/gowebdav-migrate-config.sh $(1)/etc/uci-defaults/90-gowebdav-migrate-config
 endef
 
 $(eval $(call GoBinPackage,gowebdav))
