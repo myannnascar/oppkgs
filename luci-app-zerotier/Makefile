@@ -13,7 +13,7 @@ define Package/luci-app-zerotier/conffiles
 /etc/config/zerotier
 endef
 
-include $(TOPDIR)/feeds/luci/luci.mk
+include ../../luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
 
